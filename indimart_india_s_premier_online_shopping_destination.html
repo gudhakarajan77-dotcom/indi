@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndiMart - India's Premier Online Shopping Destination</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indimart: {
+                            navy: '#131921',
+                            lightNavy: '#232f3e',
+                            amber: '#febd69',
+                            orange: '#f08804',
+                            accent: '#e47911',
+                            bg: '#f3f4f6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for horizontal brand/category scrolls */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .slide-transition {
+            transition: transform 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 flex flex-col min-h-screen">
+
+    <!-- TOP HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 shadow-md">
+        <!-- Main Top Bar -->
+        <div class="bg-indimart-navy text-white px-4 py-2.5 flex items-center justify-between gap-2 md:gap-6">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="filterByCategory('all')">
+                <div class="bg-gradient-to-r from-indimart-amber to-indimart-orange text-indimart-navy p-1.5 rounded-lg font-black text-xl tracking-tighter flex items-center justify-center">
+                    <i class="fa-solid font-bold fa-bolt mr-1"></i>IM
+                </div>
+                <div class="leading-tight">
+                    <span class="text-xl font-extrabold tracking-wide text-white block">Indi<span class="text-indimart-amber">Mart</span></span>
+                    <span class="text-[10px] text-gray-400 font-medium -mt-1 block">100% Original Brands</span>
+                </div>
+            </div>
+
+            <!-- Deliver To Location -->
+            <div class="hidden lg:flex items-center text-xs hover:border hover:border-white p-1.5 rounded cursor-pointer transition">
+                <i class="fa-solid fa-location-dot text-indimart-amber text-lg mr-2"></i>
+                <div>
+                    <span class="text-gray-400 block text-[11px]">Deliver to India</span>
+                    <span class="font-bold text-sm text-white">Mumbai 400001</span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-3xl flex items-center">
+                <div class="relative w-full flex">
+                    <select id="searchCategorySelect" onchange="handleCategorySelectChange(this.value)" class="bg-gray-200 text-gray-700 text-xs px-3 py-2.5 rounded-l-md border-r border-gray-300 focus:outline-none hidden sm:block">
+                        <option value="all">All Categories</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="kitchenware">Kitchenware</option>
+                        <option value="clothes">Fashion & Clothes</option>
+                        <option value="stationery">Stationery</option>
+                    </select>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search 100% original brand products (e.g. Apple, Nike, Philips, Parker)..." class="w-full px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indimart-orange border-none">
+                    <button onclick="handleSearch()" class="bg-indimart-amber hover:bg-indimart-orange text-indimart-navy px-5 py-2.5 rounded-r-md transition flex items-center justify-center">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Header Right Icons / Links -->
+            <div class="flex items-center space-x-3 sm:space-x-6">
+                <!-- Currency Badge -->
+                <div class="hidden md:flex items-center space-x-1 bg-indimart-lightNavy px-2.5 py-1 rounded text-xs font-semibold text-indimart-amber border border-gray-700">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <span>INR (₹)</span>
+                </div>
+
+                <!-- Account -->
+                <div class="hidden sm:block cursor-pointer hover:text-indimart-amber text-xs">
+                    <span class="text-gray-400 block text-[10px]">Hello, Sign in</span>
+                    <span class="font-bold text-sm text-white flex items-center">Account & Lists <i class="fa-solid fa-caret-down ml-1 text-xs text-gray-400"></i></span>
+                </div>
+
+                <!-- Wishlist -->
+                <div class="relative cursor-pointer hover:text-indimart-amber text-white p-1" onclick="openWishlistModal()">
+                    <i class="fa-regular fa-heart text-2xl"></i>
+                    <span id="wishlistCountBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                </div>
+
+                <!-- Cart -->
+                <div class="relative cursor-pointer text-white flex items-center hover:text-indimart-amber p-1" onclick="toggleCartModal()">
+                    <div class="relative">
+                        <i class="fa-solid fa-cart-shopping text-2xl"></i>
+                        <span id="cartCountBadge" class="absolute -top-2 -right-2 bg-indimart-orange text-indimart-navy text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </div>
+                    <span class="hidden md:block font-bold text-sm ml-2 mt-2">Cart</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Sub-Header Navigation Bar -->
+        <nav class="bg-indimart-lightNavy text-white text-xs sm:text-sm px-4 py-2 flex items-center space-x-4 overflow-x-auto no-scrollbar shadow-inner">
+            <button onclick="filterByCategory('all')" class="flex items-center space-x-1 hover:text-indimart-amber font-semibold whitespace-nowrap bg-gray-800 px-2.5 py-1 rounded">
+                <i class="fa-solid fa-bars mr-1"></i> All Products
+            </button>
+            <button onclick="filterByCategory('electronics')" class="hover:text-indimart-amber whitespace-nowrap transition">Electronics</button>
+            <button onclick="filterByCategory('kitchenware')" class="hover:text-indimart-amber whitespace-nowrap transition">Kitchenware</button>
+            <button onclick="filterByCategory('clothes')" class="hover:text-indimart-amber whitespace-nowrap transition">Fashion & Clothes</button>
+            <button onclick="filterByCategory('stationery')" class="hover:text-indimart-amber whitespace-nowrap transition">Stationery</button>
+            <span class="border-r border-gray-600 h-4 hidden sm:block"></span>
+            <span class="text-indimart-amber font-medium whitespace-nowrap"><i class="fa-solid fa-shield-halved mr-1"></i> 100% Brand Guarantee</span>
+            <span class="text-green-400 font-medium whitespace-nowrap"><i class="fa-solid fa-truck-fast mr-1"></i> Express Delivery across India</span>
+        </nav>
+    </header>
+
+    <!-- HERO CAROUSEL / BANNER SLIDER -->
+    <section class="relative max-w-7xl mx-auto w-full px-2 sm:px-4 mt-3">
+        <div class="relative overflow-hidden rounded-xl shadow-lg bg-gray-900 group h-48 sm:h-72 md:h-96">
+            <!-- Slides Container -->
+            <div id="heroSlider" class="flex h-full slide-transition">
+                <!-- Slide 1 -->
+                <div class="min-w-full h-full relative flex items-center justify-between px-8 sm:px-16 bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white">
+                    <div class="max-w-lg z-10">
+                        <span class="bg-indimart-orange text-indimart-navy text-xs uppercase font-extrabold px-3 py-1 rounded-full inline-block mb-2">Great Indian Sale</span>
+                        <h2 class="text-2xl sm:text-4xl md:text-5xl font-black mb-2 leading-tight">Flagship Electronics Fest</h2>
+                        <p class="text-xs sm:text-base text-gray-300 mb-4">Save up to 40% on Apple, Samsung, Sony, and Bose original flagship devices.</p>
+                        <button onclick="filterByCategory('electronics')" class="bg-indimart-amber hover:bg-indimart-orange text-indimart-navy font-bold px-6 py-2.5 rounded-lg text-sm shadow transition">Shop Electronics</button>
+                    </div>
+                    <div class="hidden md:block w-72 h-72 relative flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80" alt="Electronics" class="w-full h-full object-cover rounded-2xl shadow-2xl border-2 border-slate-700">
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="min-w-full h-full relative flex items-center justify-between px-8 sm:px-16 bg-gradient-to-r from-amber-950 via-amber-900 to-orange-950 text-white">
+                    <div class="max-w-lg z-10">
+                        <span class="bg-amber-400 text-amber-950 text-xs uppercase font-extrabold px-3 py-1 rounded-full inline-block mb-2">Kitchen Makeover</span>
+                        <h2 class="text-2xl sm:text-4xl md:text-5xl font-black mb-2 leading-tight">Smart Kitchen Appliances</h2>
+                        <p class="text-xs sm:text-base text-gray-300 mb-4">Original Prestige, Philips & Wonderchef cookwares with official warranty.</p>
+                        <button onclick="filterByCategory('kitchenware')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-6 py-2.5 rounded-lg text-sm shadow transition">Explore Kitchenware</button>
+                    </div>
+                    <div class="hidden md:block w-72 h-72 relative flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80" alt="Kitchenware" class="w-full h-full object-cover rounded-2xl shadow-2xl border-2 border-amber-800">
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="min-w-full h-full relative flex items-center justify-between px-8 sm:px-16 bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white">
+                    <div class="max-w-lg z-10">
+                        <span class="bg-indigo-500 text-white text-xs uppercase font-extrabold px-3 py-1 rounded-full inline-block mb-2">Trendsetter Fashion</span>
+                        <h2 class="text-2xl sm:text-4xl md:text-5xl font-black mb-2 leading-tight">Original Brand Styles</h2>
+                        <p class="text-xs sm:text-base text-gray-300 mb-4">Explore authentic apparel & footwear from Nike, Levi's, Puma & Allen Solly.</p>
+                        <button onclick="filterByCategory('clothes')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition">Browse Fashion</button>
+                    </div>
+                    <div class="hidden md:block w-72 h-72 relative flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=600&q=80" alt="Fashion" class="w-full h-full object-cover rounded-2xl shadow-2xl border-2 border-indigo-800">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition">
+                <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+            <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition">
+                <i class="fa-solid fa-chevron-right text-lg"></i>
+            </button>
+
+            <!-- Slide Indicators -->
+            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2">
+                <button onclick="goToSlide(0)" class="slide-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white transition"></button>
+                <button onclick="goToSlide(1)" class="slide-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white transition"></button>
+                <button onclick="goToSlide(2)" class="slide-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white transition"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-8 flex-1">
+        <!-- CATEGORY QUICK SELECTOR BAR -->
+        <div class="mb-8">
+            <h3 class="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3">Top Product Categories</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <div onclick="filterByCategory('electronics')" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-200 cursor-pointer flex items-center space-x-3 transition group">
+                    <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-laptop"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">Electronics</h4>
+                        <p class="text-xs text-gray-500">Apple, Sony, Dell</p>
+                    </div>
+                </div>
+
+                <div onclick="filterByCategory('kitchenware')" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-200 cursor-pointer flex items-center space-x-3 transition group">
+                    <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xl group-hover:bg-amber-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">Kitchenware</h4>
+                        <p class="text-xs text-gray-500">Philips, Prestige</p>
+                    </div>
+                </div>
+
+                <div onclick="filterByCategory('clothes')" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-200 cursor-pointer flex items-center space-x-3 transition group">
+                    <div class="w-12 h-12 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:bg-purple-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-shirt"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">Fashion & Clothes</h4>
+                        <p class="text-xs text-gray-500">Nike, Levi's, Puma</p>
+                    </div>
+                </div>
+
+                <div onclick="filterByCategory('stationery')" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-200 cursor-pointer flex items-center space-x-3 transition group">
+                    <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-pen-ruler"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">Stationery</h4>
+                        <p class="text-xs text-gray-500">Classmate, Parker</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTS SECTION HEADER & FILTERS -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-300">
+            <div>
+                <h2 id="sectionTitle" class="text-2xl font-black text-gray-900 tracking-tight">All Original Brand Products</h2>
+                <p id="productCountLabel" class="text-xs text-gray-500 mt-1">Showing all authentic items with standard brand warranty</p>
+            </div>
+
+            <!-- Sorting & Filter Controls -->
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-semibold text-gray-600">Sort By:</span>
+                <select id="sortSelect" onchange="renderProducts()" class="bg-white border border-gray-300 text-xs rounded-lg px-3 py-2 font-medium text-gray-700 focus:ring-2 focus:ring-indimart-orange focus:outline-none">
+                    <option value="featured">Featured / Best Sellers</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- PRODUCT GRID CONTAINER -->
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Dynamic Products will render here -->
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-indimart-navy text-gray-300 mt-16 text-sm">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="w-full bg-indimart-lightNavy text-white py-3 font-semibold text-xs text-center hover:bg-gray-700 transition">
+            Back to top
+        </button>
+        <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-white font-bold text-base mb-3">Get to Know Us</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="#" class="hover:underline">About IndiMart</a></li>
+                    <li><a href="#" class="hover:underline">Careers</a></li>
+                    <li><a href="#" class="hover:underline">Press Releases</a></li>
+                    <li><a href="#" class="hover:underline">Originality Guarantee</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-base mb-3">Connect with Us</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="#" class="hover:underline"><i class="fa-brands fa-facebook mr-2"></i>Facebook</a></li>
+                    <li><a href="#" class="hover:underline"><i class="fa-brands fa-twitter mr-2"></i>Twitter</a></li>
+                    <li><a href="#" class="hover:underline"><i class="fa-brands fa-instagram mr-2"></i>Instagram</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-base mb-3">Make Money with Us</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="#" class="hover:underline">Sell on IndiMart</a></li>
+                    <li><a href="#" class="hover:underline">Protect and Build Your Brand</a></li>
+                    <li><a href="#" class="hover:underline">IndiMart Fulfillment</a></li>
+                    <li><a href="#" class="hover:underline">Become an Affiliate</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-base mb-3">Let Us Help You</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="#" class="hover:underline">Your Account</a></li>
+                    <li><a href="#" class="hover:underline">Returns Centre</a></li>
+                    <li><a href="#" class="hover:underline">100% Purchase Protection</a></li>
+                    <li><a href="#" class="hover:underline">Help & Customer Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 text-center py-6 text-xs text-gray-500">
+            <p>© 2026 IndiMart.com, Inc. or its affiliates. All prices shown in Indian Rupees (₹) inclusive of GST.</p>
+        </div>
+    </footer>
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="productModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative p-6 animate-fade-in">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modalContent" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+                <!-- Dynamically populated product modal -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOPPING CART SLIDE-OVER MODAL -->
+    <div id="cartModal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between transform transition-transform">
+            <!-- Cart Header -->
+            <div class="p-4 bg-indimart-navy text-white flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping text-indimart-amber text-xl"></i>
+                    <h3 class="font-bold text-lg">Your Shopping Cart</h3>
+                </div>
+                <button onclick="toggleCartModal()" class="text-gray-300 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cartItemsContainer" class="p-4 flex-1 overflow-y-auto space-y-4 divide-y divide-gray-100">
+                <!-- Dynamic Cart Items Render Here -->
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="p-4 bg-gray-50 border-t border-gray-200 space-y-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Subtotal</span>
+                    <span id="cartSubtotal" class="font-bold text-gray-900">₹0</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Delivery Fee (India)</span>
+                    <span class="text-green-600 font-medium">FREE</span>
+                </div>
+                <div class="border-t border-gray-200 pt-2 flex justify-between text-base font-extrabold text-gray-900">
+                    <span>Total Amount</span>
+                    <span id="cartTotal" class="text-indimart-accent">₹0</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-indimart-amber hover:bg-indimart-orange text-indimart-navy font-bold py-3 rounded-lg shadow text-center transition">
+                    Proceed to Buy (Checkout)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WISHLIST MODAL -->
+    <div id="wishlistModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl relative max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                <h3 class="font-bold text-lg text-gray-900 flex items-center">
+                    <i class="fa-solid fa-heart text-red-500 mr-2"></i> Your Wishlist
+                </h3>
+                <button onclick="closeWishlistModal()" class="text-gray-400 hover:text-gray-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="wishlistItemsContainer" class="flex-1 overflow-y-auto space-y-3 divide-y divide-gray-100">
+                <!-- Wishlist Items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-indimart-navy text-white px-5 py-3 rounded-xl shadow-2xl z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-3 border-l-4 border-indimart-amber">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-indimart-amber text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // 1. PRODUCT DATABASE - Original Brands across Electronics, Kitchenware, Clothes, Stationery
+        const products = [
+            // ELECTRONICS (8 Items)
+            {
+                id: 'e1',
+                name: 'Apple iPhone 15 Pro (128 GB) - Natural Titanium',
+                brand: 'Apple',
+                category: 'electronics',
+                price: 127990,
+                originalPrice: 134900,
+                rating: 4.8,
+                reviewsCount: 1420,
+                image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80',
+                description: 'Original Apple iPhone 15 Pro forged in titanium with ground-breaking A17 Pro chip, customizable Action button, and the most powerful iPhone camera system ever.',
+                specs: ['A17 Pro Chip', '48MP Main Camera', 'Super Retina XDR OLED', 'Titanium Design']
+            },
+            {
+                id: 'e2',
+                name: 'Samsung Galaxy S24 Ultra 5G (256GB, Titanium Gray)',
+                brand: 'Samsung',
+                category: 'electronics',
+                price: 129999,
+                originalPrice: 139999,
+                rating: 4.7,
+                reviewsCount: 980,
+                image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80',
+                description: 'Original Samsung Flagship Galaxy AI smartphone featuring Snapdragon 8 Gen 3 processor, 200MP Quad Telephoto Camera, and integrated S-Pen.',
+                specs: ['Galaxy AI Features', '200MP Camera', 'Snapdragon 8 Gen 3', 'Built-in S-Pen']
+            },
+            {
+                id: 'e3',
+                name: 'Sony WH-1000XM5 Wireless Noise Cancelling Headphones',
+                brand: 'Sony',
+                category: 'electronics',
+                price: 29990,
+                originalPrice: 34990,
+                rating: 4.6,
+                reviewsCount: 2310,
+                image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80',
+                description: 'Industry-leading Active Noise Cancellation with two processors and 8 microphones for unprecedented sound purity and crystal-clear hands-free calling.',
+                specs: ['Auto NC Optimizer', '30-Hour Battery Life', 'Speak-to-Chat Tech', 'Ultra Comfortable']
+            },
+            {
+                id: 'e4',
+                name: 'Apple MacBook Air M3 Chip (15-inch, 16GB, 512GB SSD)',
+                brand: 'Apple',
+                category: 'electronics',
+                price: 154900,
+                originalPrice: 164900,
+                rating: 4.9,
+                reviewsCount: 850,
+                image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
+                description: 'Incredibly thin and fast MacBook Air with M3 chip. Offers up to 18 hours of battery life and a stunning Liquid Retina display.',
+                specs: ['Apple M3 Chip', '15.3-inch Liquid Retina Display', 'MagSafe Charging', '1080p FaceTime HD Camera']
+            },
+            {
+                id: 'e5',
+                name: 'Dell XPS 15 Laptop (Intel Core i9, 32GB RAM, 1TB SSD, RTX 4060)',
+                brand: 'Dell',
+                category: 'electronics',
+                price: 245000,
+                originalPrice: 265000,
+                rating: 4.5,
+                reviewsCount: 310,
+                image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=600&q=80',
+                description: 'Original Dell XPS 15 content creator laptop crafted from CNC machined aluminum with 3.5K OLED touch display.',
+                specs: ['13th Gen Intel i9', 'NVIDIA RTX 4060', '3.5K OLED Display', 'Quad Speaker Design']
+            },
+            {
+                id: 'e6',
+                name: 'Bose QuietComfort 45 Bluetooth Headphones',
+                brand: 'Bose',
+                category: 'electronics',
+                price: 26900,
+                originalPrice: 29900,
+                rating: 4.6,
+                reviewsCount: 1120,
+                image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80',
+                description: 'Iconic Bose noise cancellation, comfortable lightweight materials, and proprietary acoustic technology for deep, clear audio.',
+                specs: ['Quiet & Aware Modes', 'TriPort Acoustic Architecture', '24 Hours Playtime', 'USB-C Charging']
+            },
+
+            // KITCHENWARE (5 Items)
+            {
+                id: 'k1',
+                name: 'Philips Digital Air Fryer HD9252/90 (4.1 Litre)',
+                brand: 'Philips',
+                category: 'kitchenware',
+                price: 8999,
+                originalPrice: 11995,
+                rating: 4.6,
+                reviewsCount: 5400,
+                image: 'https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=600&q=80',
+                description: 'Patented Rapid Air Technology enables healthier frying with up to 90% less oil. Touchscreen display with 7 preset cooking programs.',
+                specs: ['Rapid Air Technology', '7 Preset Menus', 'Keep Warm Function', 'NutriU App Recipe Support']
+            },
+            {
+                id: 'k2',
+                name: 'Prestige Omega Deluxe Granite Non-Stick Cookware Set (3 Pcs)',
+                brand: 'Prestige',
+                category: 'kitchenware',
+                price: 2850,
+                originalPrice: 4200,
+                rating: 4.4,
+                reviewsCount: 3890,
+                image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80',
+                description: 'Durable 5-layer granite coating cookware set. Gas and induction compatible with dishwasher safe performance.',
+                specs: ['5-Layer Non-Stick Coating', 'Induction & Gas Compatible', 'PFOA Free', 'Ergonomic Handles']
+            },
+            {
+                id: 'k3',
+                name: 'Wonderchef Nutri-Blend Mixer Grinder & Blender (400W)',
+                brand: 'Wonderchef',
+                category: 'kitchenware',
+                price: 2699,
+                originalPrice: 5000,
+                rating: 4.5,
+                reviewsCount: 6700,
+                image: 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=600&q=80',
+                description: 'India\'s favorite compact blender by Chef Sanjeev Kapoor. Perfect for smoothies, juices, chutneys, and dry grinding in seconds.',
+                specs: ['400W 22000 RPM Motor', 'Surgical Grade Steel Blades', 'Hands-Free Operation', '2 Unbreakable Jars']
+            },
+            {
+                id: 'k4',
+                name: 'Kent Grand Plus 9-Litre Mineral RO Water Purifier',
+                brand: 'Kent',
+                category: 'kitchenware',
+                price: 15499,
+                originalPrice: 20000,
+                rating: 4.3,
+                reviewsCount: 2900,
+                image: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=600&q=80',
+                description: 'Multiple purification process of RO+UV+UF+TDS Control to make water 100% pure and retain essential natural minerals.',
+                specs: ['In-tank UV Disinfection', 'TDS Controller', '9 Litres Storage', 'Fully Automatic']
+            },
+
+            // CLOTHES & FASHION (5 Items)
+            {
+                id: 'c1',
+                name: "Levi's Men's 511 Slim Fit Original Stretchable Jeans",
+                brand: "Levi's",
+                category: 'clothes',
+                price: 2399,
+                originalPrice: 3999,
+                rating: 4.5,
+                reviewsCount: 3410,
+                image: 'https://images.unsplash.com/photo-1542272604-780c36856842?auto=format&fit=crop&w=600&q=80',
+                description: 'Classic iconic Levi’s 511 slim fit denim jeans crafted from premium stretch cotton for all-day flexibility and style.',
+                specs: ['99% Cotton 1% Elastane', 'Zip Fly with Button Closure', 'Signature Leather Patch', 'Machine Washable']
+            },
+            {
+                id: 'c2',
+                name: 'Nike Air Max 270 Original Men Sneakers',
+                brand: 'Nike',
+                category: 'clothes',
+                price: 12495,
+                originalPrice: 13995,
+                rating: 4.7,
+                reviewsCount: 1890,
+                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
+                description: 'Features Nike’s biggest heel Max Air unit yet for a super-soft ride that feels as impossible as it looks.',
+                specs: ['Max Air 270 Unit', 'Breathable Knit Fabric', 'Dual-density Foam Sole', 'Rubber Outsole']
+            },
+            {
+                id: 'c3',
+                name: "Puma Speedcat OG unisex Low-Top Sneakers",
+                brand: 'Puma',
+                category: 'clothes',
+                price: 7999,
+                originalPrice: 8999,
+                rating: 4.6,
+                reviewsCount: 750,
+                image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80',
+                description: 'Motorsport classic lifestyle sneaker with iconic soft suede upper and low profile rubber outsole.',
+                specs: ['Premium Suede Upper', 'Low Profile Rubber Sole', 'Motorsport Inspired', 'Lace Closure']
+            },
+            {
+                id: 'c4',
+                name: "Allen Solly Men's Solid Slim Fit Cotton Formal Shirt",
+                brand: 'Allen Solly',
+                category: 'clothes',
+                price: 1299,
+                originalPrice: 2199,
+                rating: 4.3,
+                reviewsCount: 1200,
+                image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80',
+                description: 'Elevate your office apparel with this 100% breathable cotton slim fit shirt designed by Allen Solly.',
+                specs: ['100% Premium Cotton', 'Regular Collar', 'Single Patch Pocket', 'Easy Care Wash']
+            },
+
+            // STATIONERY (4 Items)
+            {
+                id: 's1',
+                name: 'Parker Jotter Stainless Steel CT Ballpoint Pen (Blue Ink)',
+                brand: 'Parker',
+                category: 'stationery',
+                price: 475,
+                originalPrice: 550,
+                rating: 4.7,
+                reviewsCount: 4200,
+                image: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=600&q=80',
+                description: 'Authentic Parker Jotter pen with stainless steel barrel, signature arrow clip, and smooth Quinkflow refill.',
+                specs: ['Stainless Steel Body', 'Iconic Arrow Clip', 'Medium Point Refill', 'Gift Box Packaging']
+            },
+            {
+                id: 's2',
+                name: 'Classmate Pulse Spiral Notebook Pack of 4 (A4, 300 Pages)',
+                brand: 'Classmate',
+                category: 'stationery',
+                price: 420,
+                originalPrice: 500,
+                rating: 4.6,
+                reviewsCount: 6100,
+                image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
+                description: 'Eco-friendly bright paper notebooks with durable spiral binding and vibrant cover designs for school and college students.',
+                specs: ['300 Pages per Book', '70 GSM Bright Paper', 'Durable Spiral Binding', 'A4 Size']
+            },
+            {
+                id: 's3',
+                name: 'Faber-Castell Polychromos Artists’ Colored Pencils (Set of 24)',
+                brand: 'Faber-Castell',
+                category: 'stationery',
+                price: 3899,
+                originalPrice: 4500,
+                rating: 4.9,
+                reviewsCount: 920,
+                image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=600&q=80',
+                description: 'Valued internationally by professional artists for their unrivaled quality, lightfastness, and rich break-resistant leads.',
+                specs: ['High-Quality Acid-free Pigments', 'Smudge and Water-Resistant', '3.8 mm Lead Diameter', 'Tin Case']
+            },
+            {
+                id: 's4',
+                name: 'Pilot Metropolitan Collection Fountain Pen (Medium Nib)',
+                brand: 'Pilot',
+                category: 'stationery',
+                price: 1890,
+                originalPrice: 2200,
+                rating: 4.8,
+                reviewsCount: 1540,
+                image: 'https://images.unsplash.com/photo-1569172122301-bc5008bc09c5?auto=format&fit=crop&w=600&q=80',
+                description: 'Brass barrel with matte finish, stainless steel nib, and included squeeze converter for premium handwriting experience.',
+                specs: ['Brass Body', 'Japanese Steel Nib', 'Includes Ink Converter', 'Sleek Presentation Box']
+            }
+        ];
+
+        // APP STATE
+        let activeCategory = 'all';
+        let cart = [];
+        let wishlist = [];
+        let currentSlide = 0;
+        let slideInterval;
+
+        // INITIALIZATION
+        window.onload = function() {
+            renderProducts();
+            startHeroSlider();
+            updateBadges();
+        };
+
+        // 2. HERO SLIDER LOGIC
+        function startHeroSlider() {
+            slideInterval = setInterval(() => {
+                nextSlide();
+            }, 5000);
+        }
+
+        function updateSliderPosition() {
+            const slider = document.getElementById('heroSlider');
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update dots
+            const dots = document.querySelectorAll('.slide-dot');
+            dots.forEach((dot, idx) => {
+                if(idx === currentSlide) {
+                    dot.classList.add('bg-white', 'w-6');
+                    dot.classList.remove('bg-white/50', 'w-3');
+                } else {
+                    dot.classList.remove('bg-white', 'w-6');
+                    dot.classList.add('bg-white/50', 'w-3');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % 3;
+            updateSliderPosition();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + 3) % 3;
+            updateSliderPosition();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSliderPosition();
+            clearInterval(slideInterval);
+            startHeroSlider();
+        }
+
+        // 3. CATEGORY & FILTER LOGIC
+        function filterByCategory(category) {
+            activeCategory = category;
+            
+            // Sync Search select
+            const categorySelect = document.getElementById('searchCategorySelect');
+            if(categorySelect) categorySelect.value = category;
+
+            // Update title text
+            const titleMap = {
+                'all': 'All Original Brand Products',
+                'electronics': 'Original Electronics & Gadgets',
+                'kitchenware': 'Kitchenware & Home Appliances',
+                'clothes': 'Fashion, Clothes & Footwear',
+                'stationery': 'Original Stationery & Office Supplies'
+            };
+            document.getElementById('sectionTitle').innerText = titleMap[category] || 'Products';
+            renderProducts();
+        }
+
+        function handleCategorySelectChange(val) {
+            filterByCategory(val);
+        }
+
+        function handleSearch() {
+            renderProducts();
+        }
+
+        // 4. PRODUCT RENDERING ENGINE
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const searchInput = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sortVal = document.getElementById('sortSelect').value;
+
+            // Filter products
+            let filtered = products.filter(p => {
+                const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchInput) || 
+                                      p.brand.toLowerCase().includes(searchInput) ||
+                                      p.description.toLowerCase().includes(searchInput);
+                return matchesCategory && matchesSearch;
+            });
+
+            // Sort products
+            if (sortVal === 'price-low') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortVal === 'price-high') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (sortVal === 'rating') {
+                filtered.sort((a, b) => b.rating - a.rating);
+            }
+
+            document.getElementById('productCountLabel').innerText = `Showing ${filtered.length} 100% original brand products`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center">
+                        <i class="fa-solid fa-box-open text-5xl text-gray-300 mb-3"></i>
+                        <h3 class="text-lg font-bold text-gray-700">No matching products found</h3>
+                        <p class="text-xs text-gray-500 mt-1">Try adjusting your search or category filters.</p>
+                        <button onclick="filterByCategory('all'); document.getElementById('searchInput').value='';" class="mt-4 bg-indimart-amber px-4 py-2 text-xs font-bold rounded-lg text-indimart-navy">Reset Filters</button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(product => {
+                const isWishlisted = wishlist.includes(product.id);
+                const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+                return `
+                    <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative">
+                        
+                        <!-- Wishlist & Discount Badge -->
+                        <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
+                            <span class="bg-red-600 text-white font-black text-[10px] uppercase px-2 py-1 rounded shadow">
+                                ${discount}% OFF
+                            </span>
+                            <button onclick="toggleWishlist('${product.id}')" class="pointer-events-auto bg-white/80 backdrop-blur hover:bg-white text-gray-600 hover:text-red-500 p-2 rounded-full shadow transition">
+                                <i class="${isWishlisted ? 'fa-solid text-red-500' : 'fa-regular'} fa-heart text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="cursor-pointer overflow-hidden bg-gray-50 h-52 flex items-center justify-center p-4" onclick="openProductModal('${product.id}')">
+                            <img src="${product.image}" alt="${product.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500">
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-gray-400 font-semibold mb-1">
+                                    <span class="uppercase tracking-wider text-indimart-accent">${product.brand}</span>
+                                    <span class="flex items-center text-amber-500">
+                                        <i class="fa-solid fa-star text-xs mr-1"></i> ${product.rating} (${product.reviewsCount})
+                                    </span>
+                                </div>
+                                <h3 onclick="openProductModal('${product.id}')" class="font-bold text-gray-800 text-sm hover:text-indimart-orange cursor-pointer line-clamp-2 leading-snug mb-2">
+                                    ${product.name}
+                                </h3>
+                            </div>
+
+                            <div class="mt-3 pt-3 border-t border-gray-100">
+                                <!-- Price -->
+                                <div class="flex items-baseline space-x-2 mb-3">
+                                    <span class="text-xl font-black text-gray-900">₹${product.price.toLocaleString('en-IN')}</span>
+                                    <span class="text-xs text-gray-400 line-through">₹${product.originalPrice.toLocaleString('en-IN')}</span>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="openProductModal('${product.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold py-2 rounded-lg transition">
+                                        Details
+                                    </button>
+                                    <button onclick="addToCart('${product.id}')" class="bg-indimart-amber hover:bg-indimart-orange text-indimart-navy text-xs font-bold py-2 rounded-lg transition flex items-center justify-center space-x-1 shadow-sm">
+                                        <i class="fa-solid fa-cart-plus"></i>
+                                        <span>Add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 5. PRODUCT DETAIL MODAL
+        function openProductModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modalContent = document.getElementById('modalContent');
+            const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+            modalContent.innerHTML = `
+                <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center h-72 border border-gray-200 relative">
+                    <img src="${product.image}" alt="${product.name}" class="max-h-full max-w-full object-contain">
+                    <span class="absolute top-3 left-3 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                        <i class="fa-solid fa-shield-check mr-1"></i> 100% Original Brand
+                    </span>
+                </div>
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-indimart-accent uppercase tracking-wider">${product.brand}</span>
+                        <h2 class="text-xl font-black text-gray-900 mt-1 leading-snug">${product.name}</h2>
+                        
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded font-bold flex items-center">
+                                ${product.rating} <i class="fa-solid fa-star text-[10px] ml-1"></i>
+                            </span>
+                            <span class="text-xs text-gray-500">(${product.reviewsCount} customer ratings)</span>
+                        </div>
+
+                        <div class="my-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <div class="flex items-baseline space-x-3">
+                                <span class="text-2xl font-black text-gray-900">₹${product.price.toLocaleString('en-IN')}</span>
+                                <span class="text-sm text-gray-400 line-through">₹${product.originalPrice.toLocaleString('en-IN')}</span>
+                                <span class="text-xs font-bold text-red-600">Save ${discount}%</span>
+                            </div>
+                            <span class="text-[11px] text-gray-500 block mt-1">Inclusive of all taxes & FREE Express Shipping</span>
+                        </div>
+
+                        <p class="text-xs text-gray-600 leading-relaxed mb-4">${product.description}</p>
+
+                        <div class="mb-4">
+                            <h4 class="text-xs font-bold text-gray-700 uppercase mb-2">Key Highlights</h4>
+                            <ul class="grid grid-cols-2 gap-1.5 text-xs text-gray-600">
+                                ${product.specs.map(spec => `<li class="flex items-center"><i class="fa-solid fa-check text-green-500 mr-1.5 text-[10px]"></i>${spec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-3 pt-3 border-t">
+                        <button onclick="addToCart('${product.id}'); closeModal();" class="flex-1 bg-indimart-amber hover:bg-indimart-orange text-indimart-navy font-bold py-3 rounded-lg shadow transition flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span>Add to Cart</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        // 6. CART MANAGEMENT
+        function addToCart(productId) {
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                const product = products.find(p => p.id === productId);
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateBadges();
+            showToast('Added to cart successfully!');
+        }
+
+        function updateQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateBadges();
+            renderCartModal();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            updateBadges();
+            renderCartModal();
+            showToast('Item removed from cart');
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cartModal');
+            if (modal.classList.contains('hidden')) {
+                renderCartModal();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderCartModal() {
+            const container = document.getElementById('cartItemsContainer');
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fa-solid fa-basket-shopping text-4xl text-gray-300 mb-2"></i>
+                        <p class="text-sm font-bold text-gray-600">Your cart is empty</p>
+                        <p class="text-xs text-gray-400 mt-1">Explore our range of original products and add items.</p>
+                    </div>
+                `;
+                document.getElementById('cartSubtotal').innerText = '₹0';
+                document.getElementById('cartTotal').innerText = '₹0';
+                return;
+            }
+
+            let subtotal = 0;
+            container.innerHTML = cart.map(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                return `
+                    <div class="pt-3 first:pt-0 flex items-center justify-between gap-3">
+                        <img src="${item.image}" class="w-16 h-16 object-contain rounded border p-1 bg-gray-50 flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-xs font-bold text-gray-800 truncate">${item.name}</h4>
+                            <span class="text-xs text-gray-500 font-semibold block mt-0.5">₹${item.price.toLocaleString('en-IN')}</span>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <button onclick="updateQuantity('${item.id}', -1)" class="w-6 h-6 rounded bg-gray-200 text-gray-700 font-bold text-xs flex items-center justify-center hover:bg-gray-300">-</button>
+                                <span class="text-xs font-bold px-1">${item.quantity}</span>
+                                <button onclick="updateQuantity('${item.id}', 1)" class="w-6 h-6 rounded bg-gray-200 text-gray-700 font-bold text-xs flex items-center justify-center hover:bg-gray-300">+</button>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-extrabold text-gray-900 block">₹${itemTotal.toLocaleString('en-IN')}</span>
+                            <button onclick="removeFromCart('${item.id}')" class="text-red-500 text-xs hover:underline mt-2 inline-block">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cartSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+            document.getElementById('cartTotal').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!');
+                return;
+            }
+            showToast('Order Placed Successfully! Thank you for shopping at IndiMart.', 'success');
+            cart = [];
+            updateBadges();
+            toggleCartModal();
+        }
+
+        // 7. WISHLIST MANAGEMENT
+        function toggleWishlist(productId) {
+            const idx = wishlist.indexOf(productId);
+            if (idx > -1) {
+                wishlist.splice(idx, 1);
+                showToast('Removed from Wishlist');
+            } else {
+                wishlist.push(productId);
+                showToast('Added to Wishlist!');
+            }
+            updateBadges();
+            renderProducts();
+        }
+
+        function openWishlistModal() {
+            const container = document.getElementById('wishlistItemsContainer');
+            if (wishlist.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fa-regular fa-heart text-4xl text-gray-300 mb-2"></i>
+                        <p class="text-sm font-bold text-gray-600">Your Wishlist is empty</p>
+                    </div>
+                `;
+            } else {
+                const wishlistedProducts = products.filter(p => wishlist.includes(p.id));
+                container.innerHTML = wishlistedProducts.map(p => `
+                    <div class="pt-3 first:pt-0 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img src="${p.image}" class="w-12 h-12 object-contain rounded border p-1">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${p.name}</h4>
+                                <span class="text-xs font-black text-gray-900">₹${p.price.toLocaleString('en-IN')}</span>
+                            </div>
+                        </div>
+                        <button onclick="addToCart('${p.id}'); toggleWishlist('${p.id}'); openWishlistModal();" class="bg-indimart-amber text-indimart-navy text-xs px-3 py-1.5 font-bold rounded shadow hover:bg-indimart-orange">
+                            Move to Cart
+                        </button>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('wishlistModal').classList.remove('hidden');
+        }
+
+        function closeWishlistModal() {
+            document.getElementById('wishlistModal').classList.add('hidden');
+        }
+
+        // 8. BADGES & TOAST UTILITIES
+        function updateBadges() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCountBadge').innerText = cartCount;
+            document.getElementById('wishlistCountBadge').innerText = wishlist.length;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
